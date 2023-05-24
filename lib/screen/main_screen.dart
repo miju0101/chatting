@@ -1,3 +1,4 @@
+import 'package:chatting/screen/chat_list_screen.dart';
 import 'package:chatting/screen/chat_room_screen.dart';
 import 'package:chatting/screen/friend_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
       body: IndexedStack(
         children: [
           FriendScreen(),
-          ChatRoomScreen(),
+          ChatListScreen(),
         ],
         index: selectedIndex,
       ),

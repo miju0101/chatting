@@ -46,24 +46,28 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                   child: ListView.builder(
                     itemCount: snapshot!.docs.length,
                     itemBuilder: (context, index) {
-                      var current_user = snapshot!.docs[index];
+                      var search_person =
+                          snapshot!.docs[index] as DocumentSnapshot;
                       return InkWell(
                         onTap: () async {
-                          User? me = context.read<UserService>().user();
+                          User? me =
+                              context.read<UserService>().user(); //나의 uid를 가져옴
 
-                          if (me != null) {
-                            QuerySnapshot me_snapshot = await context
-                                .read<UserService>()
-                                .getMyInfo(me.uid);
+                          DocumentSnapshot me_snapshot = await context
+                              .read<UserService>()
+                              .getMyInfo(me!.uid);
 
-                            context.read<FriendService>().addFriend(
-                                me_snapshot.docs.first, current_user);
-                          }
+                          //위에서 받아온 uid로 나의 정보를 가져옴.
+                          //나의 정보는 친구를 추가할 때  정보로 쓰임.
+
+                          context
+                              .read<FriendService>()
+                              .addFriend(me_snapshot, search_person);
                         },
                         child: ListTile(
-                          leading: Image.network(current_user["profile_img"]),
-                          title: Text(current_user["name"]),
-                          subtitle: Text(current_user["email"]),
+                          leading: Image.network(search_person["profile_img"]),
+                          title: Text(search_person["name"]),
+                          subtitle: Text(search_person["email"]),
                         ),
                       );
                     },

@@ -1,6 +1,8 @@
 import 'package:chatting/screen/add_friend_screen.dart';
+import 'package:chatting/screen/chat_room_screen.dart';
 import 'package:chatting/service/friend_service.dart';
 import 'package:chatting/service/user_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,16 +23,16 @@ class _FriendScreenState extends State<FriendScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FutureBuilder(
+          FutureBuilder<DocumentSnapshot>(
             future: context
                 .read<UserService>()
                 .getMyInfo(context.read<UserService>().user()!.uid),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                var myInfo = snapshot.data!.docs.first;
+                var myInfo = snapshot.data!.data() as Map<String, dynamic>;
 
                 return ListTile(
-                  leading: Image.network(myInfo["profile_img"]),
+                  leading: Image.network(myInfo!["profile_img"] as String),
                   title: Text(myInfo["name"]),
                   subtitle: Text(myInfo["email"]),
                 );
@@ -52,9 +54,39 @@ class _FriendScreenState extends State<FriendScreen> {
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         var current_friend = snapshot.data!.docs[index];
-                        return ListTile(
-                          leading: Image.network(current_friend["profile_img"]),
-                          title: Text(current_friend["name"]),
+                        return InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text("1:1 채팅"),
+                                  content: Text(
+                                      "${current_friend["name"]}님과 대화를 하겠습니까?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ChatRoomScreen(
+                                                    uid: current_friend["uid"]),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text("네"),
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: ListTile(
+                            leading:
+                                Image.network(current_friend["profile_img"]),
+                            title: Text(current_friend["name"]),
+                          ),
                         );
                       },
                     ),

@@ -28,10 +28,7 @@ class UserService with ChangeNotifier {
     });
   }
 
-  Future<QuerySnapshot> getMyInfo(String uid) {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .where("uid", isEqualTo: uid)
-        .get();
+  Future<DocumentSnapshot> getMyInfo(String uid) {
+    return FirebaseFirestore.instance.collection("users").doc(uid).get();
   }
 }
